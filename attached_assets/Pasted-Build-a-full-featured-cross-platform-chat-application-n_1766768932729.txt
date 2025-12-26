@@ -1,0 +1,106 @@
+Build a full-featured cross-platform chat application named "BmGapshap", inspired by WhatsApp, and also design and integrate a custom app icon.
+
+====================
+APP FEATURES
+====================
+
+Authentication:
+- User signup/login with phone/email and OTP
+- Secure authentication and authorization
+- Profile setup with name, bio, and profile picture (DP)
+
+Chats:
+- One-to-one private chats
+- Group chats with admin controls
+- Real-time messaging using WebSockets
+- Send text, emojis, images, videos, documents
+- Voice notes recording and playback
+- Read receipts (single tick, double tick, blue tick)
+- Typing indicator and online/offline status
+- Message reply, forward, star, edit
+- Delete for me / delete for everyone
+- Search chats and messages
+- Block and report users
+- Chat privacy controls
+
+Calls:
+- Voice calling
+- Video calling using WebRTC
+
+Status & Updates:
+- Status stories (text/image/video) auto-expire in 24 hours
+- View, reply, react to status
+- Updates/Channels section
+
+Communities:
+- Communities to manage multiple groups
+
+Audio Jukebox / Library:
+- Dedicated audio library section
+- Users can upload songs/audio
+- Stream and play audio inside the app
+- Share audio tracks in chats
+- Create playlists and mark favorites
+- Mini in-chat audio player (play/pause/next)
+- Background playback support
+
+Other:
+- Push notifications
+- Linked devices support
+- Dark and light mode
+- Settings (account, privacy, notifications, storage)
+- Media gallery
+- Chat backup to cloud
+- QR code scan login
+- Camera integration
+- Favorites list
+
+Admin:
+- Basic admin panel to manage users and reports
+
+====================
+TECH STACK
+====================
+
+- Frontend: React with modern responsive UI (mobile-first)
+- Backend: Node.js + Express
+- Real-time: WebSocket/Socket.io
+- Database: MongoDB or PostgreSQL
+- Storage: Cloud storage for media/audio
+- Auth: JWT
+- Clean, modular, scalable code
+- Ready to run on Replit with one click
+
+====================
+APP ICON DESIGN
+====================
+
+Design and generate a custom app icon for "BmGapshap":
+
+Design:
+- Rounded square icon
+- Background: green to teal gradient
+- Main symbol: white chat bubble with a small music note inside
+- Flat, clean, modern look
+- High contrast
+- No text, no watermark
+
+Files:
+- Generate icon as SVG and PNG
+- Sizes: 1024x1024, 512x512, 192x192, 128x128
+- Save in folder: /assets/icon/
+- Filenames: icon.svg, icon.png, icon-512.png, icon-192.png, icon-128.png
+
+Integration:
+- Set this icon as the default app icon in the project
+- Use it as web favicon
+- Update any config files so the app uses this icon
+
+====================
+DELIVERABLES
+====================
+
+- Provide a complete runnable project
+- Include instructions to run and deploy on Replit
+- Ensure everything works out of the box
+- Add sample data for testing
