@@ -81,6 +81,17 @@ export async function registerRoutes(
     }
   });
 
+  // ✅ ALL CHATS LIST ROUTE
+  app.get("/api/chats", isAuthenticated, async (req, res) => {
+    try {
+      const chats = await storage.getChats();
+      res.json(chats);
+    } catch (err) {
+      console.error("🔥 /api/chats ERROR:", err);
+      res.status(500).json({ error: "chats failed" });
+    }
+  });
+
   app.get(api.chats.get.path, isAuthenticated, async (req, res) => {
     try {
       // /api/chats/:id → single chat
