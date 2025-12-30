@@ -1,7 +1,8 @@
 import { defineConfig } from "drizzle-kit";
 
+// ❗ Render / production में crash मत करो
 if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL, ensure the database is provisioned");
+  console.warn("DATABASE_URL not set, drizzle config will be idle");
 }
 
 export default defineConfig({
@@ -9,6 +10,6 @@ export default defineConfig({
   schema: "./shared/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL || "",
   },
 });
