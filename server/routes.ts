@@ -3,13 +3,17 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
+import {
+  setupAuth,
+  registerAuthRoutes,
+  isAuthenticated,
+} from "./replit_integrations/auth";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { WebSocketServer, WebSocket } from "ws";
 
 export async function registerRoutes(
   httpServer: Server,
-  app: Express
+  app: Express,
 ): Promise<Server> {
   // Setup Auth and Object Storage
   await setupAuth(app);
@@ -17,33 +21,33 @@ export async function registerRoutes(
   registerObjectStorageRoutes(app);
 
   // WebSocket Setup
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  const wss = new WebSocketServer({ server: httpServer, path: "/ws" });
   const clients = new Map<string, WebSocket>(); // userId -> ws
 
-  wss.on('connection', (ws, req) => {
+  wss.on("connection", (ws, req) => {
     // In a real app, parse session from cookie to get userId
     // For demo, we might rely on the client sending a "join" message
-    
-    ws.on('message', (data) => {
+
+    ws.on("message", (data) => {
       const message = JSON.parse(data.toString());
-      if (message.type === 'join') {
+      if (message.type === "join") {
         clients.set(message.userId, ws);
       }
     });
 
-    ws.on('close', () => {
+    ws.on("close", () => {
       // Cleanup client
     });
   });
 
   // Protected Routes Middleware
   const protectedApi = [
-    api.chats.list.path, 
+    api.chats.list.path,
     api.chats.create.path,
     api.messages.list.path,
     api.messages.send.path,
     api.stories.create.path,
-    api.audios.create.path
+    api.audios.create.path,
   ];
 
   // Users
@@ -78,9 +82,23 @@ export async function registerRoutes(
   });
 
   app.get(api.chats.get.path, isAuthenticated, async (req, res) => {
-    const chat = await storage.getChat(Number(req.params.id));
-    if (!chat) return res.status(404).json({ message: "Chat not found" });
-    res.json(chat);
+    try {
+      // /api/chats/:id → single chat
+      if (req.params && req.params.id) {
+        const chat = await storage.getChat(Number(req.params.id));
+        if (!chat) {
+          return res.status(404).json({ message: "Chat not found" });
+        }
+        return res.json(chat);
+      }
+
+      // /api/chats → all chats
+      const chats = await storage.getChats();
+      return res.json(chats);
+    } catch (err) {
+      console.error("🔥 /api/chats ERROR:", err);
+      return res.status(500).json({ error: "chats failed" });
+    }
   });
 
   // Messages
@@ -96,16 +114,16 @@ export async function registerRoutes(
       const message = await storage.createMessage({
         ...input,
         chatId: Number(req.params.chatId),
-        senderId: userId
+        senderId: userId,
       });
 
       // Notify other members via WebSocket
       const members = await storage.getChatMembers(message.chatId);
-      members.forEach(memberId => {
+      members.forEach((memberId) => {
         if (memberId !== userId) {
           const client = clients.get(memberId);
           if (client && client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ type: 'new_message', message }));
+            client.send(JSON.stringify({ type: "new_message", message }));
           }
         }
       });
@@ -130,7 +148,7 @@ export async function registerRoutes(
       const story = await storage.createStory({
         ...input,
         userId,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
       });
       res.status(201).json(story);
     } catch (e) {
@@ -150,7 +168,7 @@ export async function registerRoutes(
       const input = api.audios.create.input.parse(req.body);
       const audio = await storage.createAudio({
         ...input,
-        uploaderId: userId
+        uploaderId: userId,
       });
       res.status(201).json(audio);
     } catch (e) {
