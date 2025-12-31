@@ -92,23 +92,17 @@ export async function registerRoutes(
   });
 
   // ===============================
-  // Chats Routes (SAFE VERSION)
+  // Chats Routes (TEMP SAFE FIX)
   // ===============================
 
-  // GET /api/chats  → all chats (temporary safe)
-  app.get(api.chats.list.path, async (_req, res) => {
-    try {
-      // 🔥 storage.getChats() अभी exist नहीं करता
-      // इसलिए empty array return करेंगे
-      return res.json([]);
-    } catch (err) {
-      console.error("🔥 /api/chats ERROR:", err);
-      return res.json([]);
-    }
+  // GET /api/chats → frontend ko crash se bachane ke liye
+  app.get("/api/chats", (_req, res) => {
+    // 👇 jab tak DB logic ready nahi, empty list bhejo
+    return res.json([]);
   });
 
   // GET /api/chats/:id → single chat
-  app.get(api.chats.get.path, async (req, res) => {
+  app.get("/api/chats/:id", async (req, res) => {
     try {
       const id = Number(req.params.id);
 
