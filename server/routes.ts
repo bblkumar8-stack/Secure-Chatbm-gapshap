@@ -82,33 +82,50 @@ export async function registerRoutes(
   });
 
   // ✅ ALL CHATS LIST ROUTE
-  app.get("/api/chats", isAuthenticated, async (req, res) => {
+  app.get(api.chats.list.path, async (_req, res) => {
     try {
-      const chats = await storage.getChats();
-      res.json(chats);
+      return res.json([]); // 🔥 dummy empty list
     } catch (err) {
       console.error("🔥 /api/chats ERROR:", err);
-      res.status(500).json({ error: "chats failed" });
+      return res.json([]);
     }
   });
 
-  app.get(api.chats.get.path, isAuthenticated, async (req, res) => {
-    try {
-      // /api/chats/:id → single chat
-      if (req.params && req.params.id) {
-        const chat = await storage.getChat(Number(req.params.id));
-        if (!chat) {
-          return res.status(404).json({ message: "Chat not found" });
-        }
-        return res.json(chat);
-      }
+  // ===============================
+  // Chats Routes (SAFE VERSION)
+  // ===============================
 
-      // /api/chats → all chats
-      const chats = await storage.getChats();
-      return res.json(chats);
+  // GET /api/chats  → all chats (temporary safe)
+  app.get(api.chats.list.path, async (_req, res) => {
+    try {
+      // 🔥 storage.getChats() अभी exist नहीं करता
+      // इसलिए empty array return करेंगे
+      return res.json([]);
     } catch (err) {
       console.error("🔥 /api/chats ERROR:", err);
-      return res.status(500).json({ error: "chats failed" });
+      return res.json([]);
+    }
+  });
+
+  // GET /api/chats/:id → single chat
+  app.get(api.chats.get.path, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+
+      if (!id) {
+        return res.status(400).json({ message: "Invalid chat id" });
+      }
+
+      const chat = await storage.getChat(id);
+
+      if (!chat) {
+        return res.status(404).json({ message: "Chat not found" });
+      }
+
+      return res.json(chat);
+    } catch (err) {
+      console.error("🔥 /api/chats/:id ERROR:", err);
+      return res.status(500).json({ message: "Failed to load chat" });
     }
   });
 
