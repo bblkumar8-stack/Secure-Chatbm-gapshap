@@ -81,38 +81,29 @@ export async function registerRoutes(
     }
   });
 
-  // ===============================
-  // GET /api/chats (SAFE VERSION)
-  // ===============================
   app.get(api.chats.get.path, isAuthenticated, async (req, res) => {
     try {
-      // अगर :id आया है → single chat
+      // 🟢 DB / storage ready नहीं है तो empty array return
+      if (!storage || typeof storage.getChats !== "function") {
+        console.warn("⚠️ storage not ready, returning empty chats");
+        return res.json([]);
+      }
+
+      // /api/chats/:id → single chat
       if (req.params?.id) {
         const chat = await storage.getChat(Number(req.params.id));
-
         if (!chat) {
           return res.status(404).json({ message: "Chat not found" });
         }
-
         return res.json(chat);
       }
 
-      // 👉 all chats
+      // /api/chats → all chats
       const chats = await storage.getChats();
-
-      // ⚠️ IMPORTANT: null / undefined guard
-      if (!chats) {
-        console.warn("⚠️ storage.getChats() returned null");
-        return res.json([]); // 👈 NEVER crash
-      }
-
-      return res.json(chats);
+      return res.json(Array.isArray(chats) ? chats : []);
     } catch (err) {
       console.error("🔥 /api/chats ERROR:", err);
-
-      // ❌ throw मत करना
-      // ❌ 500 मत देना
-      // ✅ empty list return
+      // ❌ 500 भी नहीं, ताकि Render 502 न दे
       return res.json([]);
     }
   });
