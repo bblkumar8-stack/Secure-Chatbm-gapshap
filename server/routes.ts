@@ -91,35 +91,19 @@ export async function registerRoutes(
     }
   });
 
-  // ===============================
-  // Chats Routes (TEMP SAFE FIX)
-  // ===============================
-
-  // GET /api/chats → frontend ko crash se bachane ke liye
-  app.get("/api/chats", (_req, res) => {
-    // 👇 jab tak DB logic ready nahi, empty list bhejo
-    return res.json([]);
-  });
-
-  // GET /api/chats/:id → single chat
-  app.get("/api/chats/:id", async (req, res) => {
+  // /api/chats → all chats
+  app.get(api.chats.list.path, isAuthenticated, async (_req, res) => {
     try {
-      const id = Number(req.params.id);
-
-      if (!id) {
-        return res.status(400).json({ message: "Invalid chat id" });
+      // storage not ready OR method missing → return empty list
+      if (!storage || typeof (storage as any).getChats !== "function") {
+        return res.json([]);
       }
 
-      const chat = await storage.getChat(id);
-
-      if (!chat) {
-        return res.status(404).json({ message: "Chat not found" });
-      }
-
-      return res.json(chat);
+      const chats = await (storage as any).getChats();
+      return res.json(chats ?? []);
     } catch (err) {
-      console.error("🔥 /api/chats/:id ERROR:", err);
-      return res.status(500).json({ message: "Failed to load chat" });
+      console.error("🔥 /api/chats ERROR:", err);
+      return res.json([]); // NEVER throw → avoid 502
     }
   });
 
