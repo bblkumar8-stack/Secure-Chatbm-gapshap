@@ -6,6 +6,9 @@ import { createServer } from "http";
 const app = express();
 const httpServer = createServer(app);
 
+httpServer.keepAliveTimeout = 120000;
+httpServer.headersTimeout = 120000;
+
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
