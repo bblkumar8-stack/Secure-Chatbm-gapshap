@@ -81,29 +81,39 @@ export async function registerRoutes(
     }
   });
 
-  // ✅ ALL CHATS LIST ROUTE
-  app.get(api.chats.list.path, async (_req, res) => {
+  // ===============================
+  // GET /api/chats (SAFE VERSION)
+  // ===============================
+  app.get(api.chats.get.path, isAuthenticated, async (req, res) => {
     try {
-      return res.json([]); // 🔥 dummy empty list
-    } catch (err) {
-      console.error("🔥 /api/chats ERROR:", err);
-      return res.json([]);
-    }
-  });
+      // अगर :id आया है → single chat
+      if (req.params?.id) {
+        const chat = await storage.getChat(Number(req.params.id));
 
-  // /api/chats → all chats
-  app.get(api.chats.list.path, isAuthenticated, async (_req, res) => {
-    try {
-      // storage not ready OR method missing → return empty list
-      if (!storage || typeof (storage as any).getChats !== "function") {
-        return res.json([]);
+        if (!chat) {
+          return res.status(404).json({ message: "Chat not found" });
+        }
+
+        return res.json(chat);
       }
 
-      const chats = await (storage as any).getChats();
-      return res.json(chats ?? []);
+      // 👉 all chats
+      const chats = await storage.getChats();
+
+      // ⚠️ IMPORTANT: null / undefined guard
+      if (!chats) {
+        console.warn("⚠️ storage.getChats() returned null");
+        return res.json([]); // 👈 NEVER crash
+      }
+
+      return res.json(chats);
     } catch (err) {
       console.error("🔥 /api/chats ERROR:", err);
-      return res.json([]); // NEVER throw → avoid 502
+
+      // ❌ throw मत करना
+      // ❌ 500 मत देना
+      // ✅ empty list return
+      return res.json([]);
     }
   });
 
