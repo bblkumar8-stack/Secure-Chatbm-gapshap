@@ -26,16 +26,14 @@ export function ChatWindow({ chatId }: { chatId: number }) {
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-  useEffect(() => {
     if (!socket) return;
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
       if (data.type === "new_message") {
-        console.log("📩 Realtime message:", data.message);
+        // refetch messages
+        window.location.reload();
       }
     };
 
@@ -44,15 +42,6 @@ export function ChatWindow({ chatId }: { chatId: number }) {
     };
   }, [socket]);
 
-  const handleSend = () => {
-    if (!inputText.trim()) return;
-    sendMessage.mutate({
-      chatId,
-      content: inputText,
-      type: "text",
-    });
-    setInputText("");
-  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
