@@ -62,17 +62,17 @@ export async function registerRoutes(
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   });
-
   // =======================
-  // /api/chats (SAFE MODE)
+  // /api/chats (LIST)
   // =======================
-  app.get(api.chats.list.path, async (_req, res) => {
+  app.get(api.chats.list.path, isAuthenticated, async (req: any, res) => {
     try {
-      // Render safe: no auth, no DB
-      return res.status(200).json([]);
+      const userId = req.user?.claims?.sub || "demo-user";
+      const chats = await storage.getUserChats(userId);
+      return res.json(chats);
     } catch (err) {
-      console.error("❌ /api/chats ERROR:", err);
-      return res.status(200).json([]);
+      console.error("❌ list chats error", err);
+      return res.json([]); // never 502
     }
   });
 
