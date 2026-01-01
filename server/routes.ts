@@ -87,10 +87,11 @@ export async function registerRoutes(
   app.get(api.chats.get.path, isAuthenticated, async (_req, res) => {
     try {
       // TEMP SAFE RESPONSE (DB disabled)
-      return res.json([]);
+      return res.status(200).json([]);
     } catch (err) {
       console.error("❌ /api/chats ERROR:", err);
-      return res.json([]); // never throw -> no 502
+      // absolutely never crash
+      return res.status(200).json([]);
     }
   });
 
