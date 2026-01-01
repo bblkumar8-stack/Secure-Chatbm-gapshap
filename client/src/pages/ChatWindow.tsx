@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/hooks/use-chats";
 import { useMessages, useSendMessage } from "@/hooks/use-messages";
@@ -17,6 +18,7 @@ export function ChatWindow({ chatId }: { chatId: number }) {
   const sendMessage = useSendMessage();
   const { user } = useAuth();
   const socket = useSocket();
+  const queryClient = useQueryClient();
 
   const [inputText, setInputText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -29,18 +31,22 @@ export function ChatWindow({ chatId }: { chatId: number }) {
     if (!socket) return;
 
     socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      try {
+        const data = JSON.parse(event.data);
 
-      if (data.type === "new_message") {
-        // refetch messages
-        window.location.reload();
+        if (data.type === "new_message") {
+          console.log("📨 Realtime message received", data.message);
+
+          // 🔁 refresh messages query
+          queryClient.invalidateQueries({
+            queryKey: ["/api/messages", chatId],
+          });
+        }
+      } catch (e) {
+        console.error("WS message parse error", e);
       }
     };
-
-    return () => {
-      socket.onmessage = null;
-    };
-  }, [socket]);
+  }, [socket, chatId, queryClient]);
 
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
