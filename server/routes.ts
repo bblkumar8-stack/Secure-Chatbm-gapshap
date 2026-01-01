@@ -140,6 +140,29 @@ export async function registerRoutes(
 
         content: input.content,
       });
+      // ===============================
+      // Realtime notify (SAFE MODE)
+      // ===============================
+      try {
+        const members = await storage.getChatMembers(message.chatId);
+
+        members.forEach((memberId) => {
+          if (memberId !== userId) {
+            const client = clients.get(memberId);
+            if (client && client.readyState === WebSocket.OPEN) {
+              client.send(
+                JSON.stringify({
+                  type: "new_message",
+                  message,
+                }),
+              );
+            }
+          }
+        });
+      } catch (err) {
+        console.warn("⚠️ WebSocket notify skipped:", err);
+        // ❌ never throw (Render safety)
+      }
 
       return res.status(201).json(message);
     } catch (err) {
