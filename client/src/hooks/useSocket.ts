@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 export function useSocket() {
   const socketRef = useRef<WebSocket | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
@@ -14,6 +16,16 @@ export function useSocket() {
 
     socket.onopen = () => {
       console.log("✅ WebSocket connected");
+
+      // 🔐 register user with server
+      if (user?.id) {
+        socket.send(
+          JSON.stringify({
+            type: "register",
+            userId: user.id,
+          })
+        );
+      }
     };
 
     socket.onerror = (err) => {
@@ -27,7 +39,8 @@ export function useSocket() {
     return () => {
       socket.close();
     };
-  }, []);
+  }, [user?.id]);
 
   return socketRef.current;
 }
+
