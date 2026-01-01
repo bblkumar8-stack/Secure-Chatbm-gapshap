@@ -81,30 +81,16 @@ export async function registerRoutes(
     }
   });
 
-  app.get(api.chats.get.path, isAuthenticated, async (req, res) => {
+  // =======================
+  // /api/chats (SAFE MODE)
+  // =======================
+  app.get(api.chats.get.path, isAuthenticated, async (_req, res) => {
     try {
-      // 🟢 DB / storage ready नहीं है तो empty array return
-      if (!storage || typeof storage.getChats !== "function") {
-        console.warn("⚠️ storage not ready, returning empty chats");
-        return res.json([]);
-      }
-
-      // /api/chats/:id → single chat
-      if (req.params?.id) {
-        const chat = await storage.getChat(Number(req.params.id));
-        if (!chat) {
-          return res.status(404).json({ message: "Chat not found" });
-        }
-        return res.json(chat);
-      }
-
-      // /api/chats → all chats
-      const chats = await storage.getChats();
-      return res.json(Array.isArray(chats) ? chats : []);
-    } catch (err) {
-      console.error("🔥 /api/chats ERROR:", err);
-      // ❌ 500 भी नहीं, ताकि Render 502 न दे
+      // TEMP SAFE RESPONSE (DB disabled)
       return res.json([]);
+    } catch (err) {
+      console.error("❌ /api/chats ERROR:", err);
+      return res.json([]); // never throw -> no 502
     }
   });
 
