@@ -137,7 +137,7 @@ export async function registerRoutes(
       const message = await storage.createMessage({
         chatId,
         senderId: userId,
-        role: input.role,
+
         content: input.content,
       });
 
