@@ -12,19 +12,30 @@ const httpServer = createServer(app);
 const wss = new WebSocketServer({ server: httpServer });
 const clients = new Map<string, WebSocket>();
 
-wss.on("connection", (ws, req) => {
-  try {
-    const url = new URL(req.url || "", "http://localhost");
-    const userId = url.searchParams.get("userId") || "demo-user";
+wss.on("connection", (ws) => {
+  console.log("🟢 WebSocket connected");
 
-    clients.set(userId, ws);
+  ws.on("message", (data) => {
+    try {
+      const msg = JSON.parse(data.toString());
 
-    ws.on("close", () => {
-      clients.delete(userId);
-    });
-  } catch (e) {
-    console.error("WebSocket connection error", e);
-  }
+      if (msg.type === "register" && msg.userId) {
+        clients.set(msg.userId, ws);
+        console.log("✅ WS registered:", msg.userId);
+      }
+    } catch (e) {
+      console.error("❌ WS message error", e);
+    }
+  });
+
+  ws.on("close", () => {
+    for (const [userId, socket] of clients.entries()) {
+      if (socket === ws) {
+        clients.delete(userId);
+        console.log("🔴 WS disconnected:", userId);
+      }
+    }
+  });
 });
 
 httpServer.keepAliveTimeout = 120000;
