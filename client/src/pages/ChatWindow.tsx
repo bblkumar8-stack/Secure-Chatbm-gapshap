@@ -9,13 +9,15 @@ import { Send, ArrowLeft, Paperclip, Smile, MoreVertical, Phone, Video } from "l
 import { Link } from "wouter";
 import { format } from "date-fns";
 import { ObjectUploader } from "@/components/ObjectUploader";
+import { useSocket } from "@/hooks/useSocket";
 
 export function ChatWindow({ chatId }: { chatId: number }) {
   const { data: chat, isLoading: chatLoading } = useChat(chatId);
   const { data: messages, isLoading: msgsLoading } = useMessages(chatId);
   const sendMessage = useSendMessage();
   const { user } = useAuth();
-  
+  const socket = useSocket();
+
   const [inputText, setInputText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +28,21 @@ export function ChatWindow({ chatId }: { chatId: number }) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "new_message") {
+        console.log("📩 Realtime message:", data.message);
+      }
+    };
+
+    return () => {
+      socket.onmessage = null;
+    };
+  }, [socket]);
 
   const handleSend = () => {
     if (!inputText.trim()) return;
