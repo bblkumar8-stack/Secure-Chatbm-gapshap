@@ -25,9 +25,7 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 // ✅ Root health check (Render fix)
-app.get("/", (_req, res) => {
-  res.send("BM Gapshap server is running 🚀");
-});
+
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
