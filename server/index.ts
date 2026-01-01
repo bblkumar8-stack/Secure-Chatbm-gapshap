@@ -29,10 +29,10 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
-    for (const [userId, socket] of clients.entries()) {
-      if (socket === ws) {
+    for (const [userId, client] of clients.entries()) {
+      if (client === ws) {
         clients.delete(userId);
-        console.log("🔴 WS disconnected:", userId);
+        console.log("🔴 WS removed:", userId);
       }
     }
   });

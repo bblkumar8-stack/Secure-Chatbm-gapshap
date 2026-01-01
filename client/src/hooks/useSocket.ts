@@ -17,16 +17,14 @@ export function useSocket() {
     socket.onopen = () => {
       console.log("✅ WebSocket connected");
 
-      // 🔐 register user with server
-      if (user?.id) {
-        socket.send(
-          JSON.stringify({
-            type: "register",
-            userId: user.id,
-          })
-        );
-      }
+      socket.send(
+        JSON.stringify({
+          type: "register",
+          userId: "demo-user", // अभी hardcoded ठीक है
+        })
+      );
     };
+
 
     socket.onerror = (err) => {
       console.error("❌ WebSocket error", err);
