@@ -2,9 +2,30 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { WebSocketServer, WebSocket } from "ws";
 
 const app = express();
 const httpServer = createServer(app);
+// =======================
+// WebSocket setup
+// =======================
+const wss = new WebSocketServer({ server: httpServer });
+const clients = new Map<string, WebSocket>();
+
+wss.on("connection", (ws, req) => {
+  try {
+    const url = new URL(req.url || "", "http://localhost");
+    const userId = url.searchParams.get("userId") || "demo-user";
+
+    clients.set(userId, ws);
+
+    ws.on("close", () => {
+      clients.delete(userId);
+    });
+  } catch (e) {
+    console.error("WebSocket connection error", e);
+  }
+});
 
 httpServer.keepAliveTimeout = 120000;
 httpServer.headersTimeout = 120000;
@@ -25,7 +46,6 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 // ✅ Root health check (Render fix)
-
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
