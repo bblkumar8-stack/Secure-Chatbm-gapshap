@@ -119,6 +119,12 @@ export async function registerRoutes(
 
         members.forEach((memberId) => {
           if (memberId !== userId) {
+            console.log(
+              "📤 notify member:",
+              memberId,
+              "client exists:",
+              clients.has(memberId),
+            );
             const client = clients.get(memberId);
             if (client && client.readyState === WebSocket.OPEN) {
               client.send(

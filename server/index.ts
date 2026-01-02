@@ -16,15 +16,24 @@ wss.on("connection", (ws) => {
   console.log("🟢 WebSocket connected");
 
   ws.on("message", (data) => {
-    try {
-      const msg = JSON.parse(data.toString());
+    let msg: any;
 
-      if (msg.type === "register" && msg.userId) {
-        clients.set(msg.userId, ws);
-        console.log("✅ WS registered:", msg.userId);
-      }
-    } catch (e) {
-      console.error("❌ WS message error", e);
+    try {
+      msg = JSON.parse(data.toString());
+    } catch {
+      return; // ignore non-JSON (ping etc.)
+    }
+
+    // ❤️ heartbeat
+    if (msg.type === "ping") {
+      return;
+    }
+
+    // ✅ register user
+    if (msg.type === "register" && msg.userId) {
+      clients.set(msg.userId, ws);
+      console.log("✅ WS registered:", msg.userId);
+      return;
     }
   });
 
