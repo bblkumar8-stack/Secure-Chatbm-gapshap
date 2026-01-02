@@ -7,6 +7,7 @@ export function useSocket() {
 
   useEffect(() => {
     if (!user?.id) return;
+    if (socketRef.current) return; // 🔥 VERY IMPORTANT
 
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const wsUrl = `${protocol}://${window.location.host}`;
@@ -18,9 +19,7 @@ export function useSocket() {
 
     socket.onopen = () => {
       console.log("✅ WebSocket connected");
-      console.log("➡️ Sending register:", user.id);
 
-      // 🔥 VERY IMPORTANT
       socket.send(
         JSON.stringify({
           type: "register",
@@ -28,12 +27,7 @@ export function useSocket() {
         }),
       );
     };
-    // ❤️ HEARTBEAT (Render fix)
-    const heartbeat = setInterval(() => {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: "ping" }));
-      }
-    }, 20000);
+
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -47,7 +41,14 @@ export function useSocket() {
 
     socket.onclose = () => {
       console.log("🔌 WebSocket closed");
+      socketRef.current = null;
     };
+
+    const heartbeat = setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 20000);
 
     return () => {
       clearInterval(heartbeat);
