@@ -29,12 +29,18 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
-    for (const [userId, client] of clients.entries()) {
-      if (client === ws) {
+    console.log("⚪ WebSocket disconnected");
+
+    // cleanup
+    for (const [userId, socket] of clients.entries()) {
+      if (socket === ws) {
         clients.delete(userId);
-        console.log("🔴 WS removed:", userId);
       }
     }
+  });
+
+  ws.on("error", (err) => {
+    console.error("❌ WS error", err);
   });
 });
 

@@ -27,7 +27,12 @@ export function useSocket() {
         }),
       );
     };
-
+    // ❤️ HEARTBEAT (Render fix)
+    const heartbeat = setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 20000);
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -44,8 +49,10 @@ export function useSocket() {
     };
 
     return () => {
+      clearInterval(heartbeat);
       socket.close();
     };
+
   }, [user?.id]);
 
   return socketRef.current;
