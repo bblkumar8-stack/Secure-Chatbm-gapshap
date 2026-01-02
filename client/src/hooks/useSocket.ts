@@ -18,6 +18,7 @@ export function useSocket() {
 
     socket.onopen = () => {
       console.log("✅ WebSocket connected");
+      console.log("➡️ Sending register:", user.id);
 
       // 🔥 VERY IMPORTANT
       socket.send(
@@ -52,7 +53,6 @@ export function useSocket() {
       clearInterval(heartbeat);
       socket.close();
     };
-
   }, [user?.id]);
 
   return socketRef.current;
