@@ -9,7 +9,11 @@ const httpServer = createServer(app);
 // =======================
 // WebSocket setup
 // =======================
-const wss = new WebSocketServer({ server: httpServer });
+const wss = new WebSocketServer({
+  server: httpServer,
+  path: "/ws",
+});
+
 const clients = new Map<string, WebSocket>();
 
 wss.on("connection", (ws) => {

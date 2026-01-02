@@ -10,7 +10,7 @@ export function useSocket() {
     if (socketRef.current) return; // 🔥 VERY IMPORTANT
 
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://${window.location.host}`;
+    const wsUrl = `${protocol}://${window.location.host}/ws`;
 
     console.log("🔌 Connecting WebSocket:", wsUrl);
 
