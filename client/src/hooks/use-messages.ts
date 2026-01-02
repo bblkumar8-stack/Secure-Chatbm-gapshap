@@ -3,17 +3,22 @@ import { api, buildUrl, type Message, type CreateMessageRequest } from "@shared/
 
 export function useMessages(chatId: number) {
   return useQuery({
-    queryKey: [api.messages.list.path, chatId],
+    queryKey: ["messages", chatId],
     queryFn: async () => {
       const url = buildUrl(api.messages.list.path, { chatId });
       const res = await fetch(url, { credentials: "include" });
-      if (!res.ok) throw new Error("Failed to fetch messages");
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch messages");
+      }
+
       return api.messages.list.responses[200].parse(await res.json());
     },
-    enabled: !!chatId,
-    refetchInterval: 3000, // Poll every 3s for new messages (simple implementation)
+    enabled: typeof chatId === "number" && chatId > 0,
+    refetchInterval: 3000, // 🔁 polling every 3 seconds
   });
 }
+
 
 export function useSendMessage() {
   const queryClient = useQueryClient();
