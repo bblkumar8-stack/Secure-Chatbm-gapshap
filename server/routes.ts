@@ -123,7 +123,7 @@ export async function registerRoutes(
               "📤 notify member:",
               memberId,
               "client exists:",
-              clients.has(memberId),
+              clients.has(memberId)
             );
             const client = clients.get(memberId);
             if (client && client.readyState === WebSocket.OPEN) {
