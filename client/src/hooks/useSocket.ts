@@ -6,6 +6,8 @@ export function useSocket() {
   const { user } = useAuth();
 
   useEffect(() => {
+    if (!user?.id) return;
+
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const wsUrl = `${protocol}://${window.location.host}`;
 
@@ -17,14 +19,21 @@ export function useSocket() {
     socket.onopen = () => {
       console.log("✅ WebSocket connected");
 
+      // 🔥 VERY IMPORTANT
       socket.send(
         JSON.stringify({
           type: "register",
-          userId: "demo-user", // अभी hardcoded ठीक है
-        })
+          userId: user.id,
+        }),
       );
     };
 
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log("📩 WS message:", data);
+      } catch {}
+    };
 
     socket.onerror = (err) => {
       console.error("❌ WebSocket error", err);
@@ -41,4 +50,3 @@ export function useSocket() {
 
   return socketRef.current;
 }
-
