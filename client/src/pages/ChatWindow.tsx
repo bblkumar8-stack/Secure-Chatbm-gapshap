@@ -145,6 +145,6 @@ export function ChatWindow({ chatId }: { chatId: number }) {
           RAW TEST BUTTON
         </button>
       </div>
-
-
-
+    </div>
+  );
+}
