@@ -132,19 +132,33 @@ export function ChatWindow({ chatId }: { chatId: number }) {
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t">
-        <button
-          style={{
-            padding: "12px 20px",
-            background: "red",
-            color: "white",
-            fontSize: "16px",
-          }}
-          onClick={() => alert("RAW BUTTON WORKING")}
-        >
-          RAW TEST BUTTON
-        </button>
-      </div>
-    </div>
+      <form
+        className="p-3 border-t flex gap-2"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          if (!inputText.trim()) return;
+
+          await fetch(`/api/chats/${chatId}/messages`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: inputText }),
+          });
+
+          setInputText("");
+        }}
+      >
+        <input
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Type a message..."
+          className="flex-1 border rounded-lg px-3 py-2 text-sm"
+        />
+
+        <Button type="submit" disabled={!inputText.trim()}>
+          Send
+        </Button>
+      </form>
+
   );
 }
