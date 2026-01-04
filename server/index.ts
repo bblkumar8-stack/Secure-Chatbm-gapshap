@@ -6,6 +6,30 @@ import { WebSocketServer, WebSocket } from "ws";
 
 const app = express();
 const httpServer = createServer(app);
+import { db } from "./db";
+import { users } from "@shared/schema";
+
+// TEMP: ensure at least one extra user exists for chat testing
+async function ensureDummyUser() {
+  try {
+    await db
+      .insert(users)
+      .values({
+        id: "test-user-2",
+        email: "test2@bm.com",
+        firstName: "Test",
+        lastName: "User",
+      })
+      .onConflictDoNothing();
+
+    console.log("✅ Dummy user ensured");
+  } catch (err) {
+    console.error("❌ Failed to insert dummy user", err);
+  }
+}
+
+ensureDummyUser();
+
 // =======================
 // WebSocket setup
 // =======================
