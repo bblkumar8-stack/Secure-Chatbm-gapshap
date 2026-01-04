@@ -75,9 +75,15 @@ export async function registerRoutes(
   // ==================================================
   // CHATS (SAFE MODE)
   // ==================================================
-  app.get(api.chats.list.path, async (_req, res) => {
-    // Render safety: never throw
-    return res.status(200).json([]);
+  app.get(api.chats.list.path, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || "demo-user";
+      const chats = await storage.getUserChats(userId);
+      return res.status(200).json(chats);
+    } catch (err) {
+      console.error("Failed to fetch chats", err);
+      return res.status(200).json([]);
+    }
   });
 
   app.post(api.chats.create.path, isAuthenticated, async (req: any, res) => {
