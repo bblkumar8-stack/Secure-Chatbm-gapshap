@@ -159,6 +159,6 @@ export function ChatWindow({ chatId }: { chatId: number }) {
           Send
         </Button>
       </form>
-
   );
 }
+  
