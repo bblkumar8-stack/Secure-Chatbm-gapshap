@@ -24,6 +24,21 @@ export async function registerRoutes(
   await setupAuth(app);
   registerAuthRoutes(app);
   registerObjectStorageRoutes(app);
+  // ===============================
+  // CHAT POLLING API
+  // ===============================
+  app.get("/api/messages", async (req, res) => {
+    try {
+      const messages = await storage.getMessages();
+      // 👆 agar tum Drizzle use kar rahe ho,
+      // to yahan wahi function use karo jo messages laata hai
+
+      res.status(200).json(messages);
+    } catch (e) {
+      console.log("polling error, ignore");
+      res.status(200).json([]); // IMPORTANT
+    }
+  });
 
   // ==================================================
   // WebSocket Setup
@@ -99,6 +114,9 @@ export async function registerRoutes(
       const chatId = Number(req.params.chatId);
       const userId = req.user?.claims?.sub || "demo-user";
 
+      console.log("POST ROUTE chatId =", chatId);
+      console.log("POST ROUTE body =", req.body);
+
       if (!chatId || Number.isNaN(chatId)) {
         return res.status(400).json({ message: "Invalid chatId" });
       }
@@ -123,7 +141,7 @@ export async function registerRoutes(
               "📤 notify member:",
               memberId,
               "client exists:",
-              clients.has(memberId)
+              clients.has(memberId),
             );
             const client = clients.get(memberId);
             if (client && client.readyState === WebSocket.OPEN) {

@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, buildUrl, type Message, type CreateMessageRequest } from "@shared/routes";
+import {
+  api,
+  buildUrl,
+  type Message,
+  type CreateMessageRequest,
+} from "@shared/routes";
 
 export function useMessages(chatId: number) {
   return useQuery({
@@ -19,26 +24,34 @@ export function useMessages(chatId: number) {
   });
 }
 
-
 export function useSendMessage() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ chatId, ...data }: { chatId: number } & Omit<CreateMessageRequest, "chatId" | "senderId">) => {
+    mutationFn: async ({
+      chatId,
+      ...data
+    }: { chatId: number } & Omit<
+      CreateMessageRequest,
+      "chatId" | "senderId"
+    >) => {
       const url = buildUrl(api.messages.send.path, { chatId });
       const validated = api.messages.send.input.parse(data);
-      
+
       const res = await fetch(url, {
         method: api.messages.send.method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(validated),
         credentials: "include",
       });
-      
+
       if (!res.ok) throw new Error("Failed to send message");
       return api.messages.send.responses[201].parse(await res.json());
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [api.messages.list.path, variables.chatId] });
+      queryClient.invalidateQueries({
+        queryKey: ["messages", variables.chatId],
+      });
+
       queryClient.invalidateQueries({ queryKey: [api.chats.list.path] }); // Update last message in list
     },
   });
