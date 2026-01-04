@@ -46,8 +46,7 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   async searchUsers(query: string): Promise<User[]> {
     console.log("SEARCH USERS API HIT");
-
-    // TEMP: testing ke liye saare users dikha do
+      // TEMP: testing ke liye saare users dikha do
     return await db.select().from(users).limit(10);
   }
 
