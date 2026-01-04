@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Search, UserPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSearchUsers } from "@/hooks/use-users";
 import { useCreateChat } from "@/hooks/use-chats";
@@ -26,14 +32,18 @@ export function UserSearch() {
           setOpen(false);
           setLocation(`/?chatId=${chat.id}`);
         },
-      }
+      },
     );
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-primary hover:text-primary hover:bg-primary/10 rounded-full">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-primary hover:text-primary hover:bg-primary/10 rounded-full"
+        >
           <UserPlus className="w-6 h-6" />
         </Button>
       </DialogTrigger>
@@ -51,26 +61,43 @@ export function UserSearch() {
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-          
+
           <div className="h-[300px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
             {isLoading && query && (
-              <p className="text-center text-sm text-muted-foreground py-4">Searching...</p>
+              <p className="text-center text-sm text-muted-foreground py-4">
+                Searching...
+              </p>
             )}
-            
+
             {users?.map((user) => (
-              <div key={user.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors group">
+              <div
+                key={user.id}
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors group"
+              >
                 <div className="flex items-center gap-3">
                   <Avatar>
                     <AvatarImage src={user.profileImageUrl || undefined} />
-                    <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
+                    <AvatarFallback>
+                      {(
+                        user.username?.[0] ||
+                        user.firstName?.[0] ||
+                        "?"
+                      ).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium">{user.firstName ? `${user.firstName} ${user.lastName || ''}` : user.username}</p>
-                    <p className="text-xs text-muted-foreground">@{user.username}</p>
+                    <p className="font-medium">
+                      {user.firstName
+                        ? `${user.firstName} ${user.lastName || ""}`
+                        : user.username}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      @{user.username}
+                    </p>
                   </div>
                 </div>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   onClick={() => handleStartChat(user.id)}
                   disabled={createChat.isPending}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -85,7 +112,7 @@ export function UserSearch() {
                 <p>No users found matching "{query}"</p>
               </div>
             )}
-            
+
             {!query && (
               <div className="text-center py-8 text-muted-foreground opacity-50">
                 <Search className="w-12 h-12 mx-auto mb-2 stroke-1" />
