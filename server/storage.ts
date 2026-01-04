@@ -104,12 +104,14 @@ export class DatabaseStorage implements IStorage {
       .insert(chats)
       .values({
         type: req.type,
-        name: req.name,
-        iconUrl: req.iconUrl,
+        name: req.name ?? null,
+        iconUrl: req.iconUrl ?? null,
+        lastMessageAt: new Date(),
       })
       .returning();
 
-    const members = [...new Set([...req.memberIds, creatorId])];
+    // ✅ Ensure creator + all members are always added
+    const members = Array.from(new Set([creatorId, ...req.memberIds]));
 
     await db.insert(chatMembers).values(
       members.map((userId) => ({
