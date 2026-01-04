@@ -3,11 +3,11 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { WebSocketServer, WebSocket } from "ws";
+import { db } from "./db";
+import { users } from "@shared/schema";
 
 const app = express();
 const httpServer = createServer(app);
-import { db } from "./db";
-import { users } from "@shared/schema";
 
 // TEMP: ensure at least one extra user exists for chat testing
 async function ensureDummyUser() {
