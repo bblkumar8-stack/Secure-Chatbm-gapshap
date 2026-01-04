@@ -47,12 +47,15 @@ export function useSendMessage() {
       if (!res.ok) throw new Error("Failed to send message");
       return api.messages.send.responses[201].parse(await res.json());
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["messages", variables.chatId],
-      });
-
-      queryClient.invalidateQueries({ queryKey: [api.chats.list.path] }); // Update last message in list
-    },
+onSuccess: (_, variables) => {
+  queryClient.invalidateQueries({
+    queryKey: ["messages", variables.chatId],
+    exact: true,
   });
-}
+
+  queryClient.invalidateQueries({
+    queryKey: [api.chats.list.path],
+    exact: true,
+  });
+},
+
