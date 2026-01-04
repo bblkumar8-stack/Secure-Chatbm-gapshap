@@ -155,10 +155,11 @@ export function ChatWindow({ chatId }: { chatId: number }) {
           className="flex-1 border rounded-lg px-3 py-2 text-sm"
         />
 
-        <Button type="submit" disabled={!inputText.trim()}>
-          Send
-        </Button>
+      <Button type="submit" disabled={!inputText.trim()}>
+        Send
+      </Button>
       </form>
-  );
-}
-  
+      </div>
+      );
+      }
+
