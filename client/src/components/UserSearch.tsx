@@ -24,12 +24,12 @@ export function UserSearch() {
   // ✅ 2. derived values AFTER
   const q = query.toLowerCase();
 
-  const filteredUsers = users.filter((user) => {
-    return (
-      user.firstName?.toLowerCase().includes(q) ||
-      user.lastName?.toLowerCase().includes(q) ||
-      user.email?.toLowerCase().includes(q)
-    );
+  const filteredUsers = (users ?? []).filter((user) => {
+    const firstName = user.firstName?.toLowerCase() ?? "";
+    const lastName = user.lastName?.toLowerCase() ?? "";
+    const email = user.email?.toLowerCase() ?? "";
+
+    return firstName.includes(q) || lastName.includes(q) || email.includes(q);
   });
 
   const createChat = useCreateChat();
