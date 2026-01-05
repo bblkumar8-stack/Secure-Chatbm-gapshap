@@ -17,6 +17,16 @@ import { useLocation } from "wouter";
 export function UserSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const q = query.toLowerCase();
+
+  const filteredUsers = (users ?? []).filter((user) => {
+    return (
+      user.firstName?.toLowerCase().includes(q) ||
+      user.lastName?.toLowerCase().includes(q) ||
+      user.email?.toLowerCase().includes(q)
+    );
+  });
+
   const { data: users, isLoading } = useSearchUsers(query);
   const createChat = useCreateChat();
   const [, setLocation] = useLocation();
@@ -69,7 +79,8 @@ export function UserSearch() {
               </p>
             )}
 
-            {users?.map((user) => (
+      {filteredUsers.map((user) => (
+
               <div
                 key={user.id}
                 className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors group"
