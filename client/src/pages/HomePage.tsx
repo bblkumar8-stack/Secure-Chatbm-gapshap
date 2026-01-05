@@ -23,16 +23,13 @@ export default function HomePage() {
 
   console.log("HOME PAGE activeChatId =", activeChatId);
 
-  const q = search.trim().toLowerCase();
+  const q = search.toLowerCase();
 
   const filteredChats = chats?.filter((chat) => {
-    if (!q) return true;
-
     return (
-      (chat.name ?? "").toLowerCase().includes(q) ||
-      (chat.otherUser?.username ?? "").toLowerCase().includes(q) ||
-      (chat.otherUser?.firstName ?? "").toLowerCase().includes(q) ||
-      (chat.otherUser?.lastName ?? "").toLowerCase().includes(q)
+      chat.name?.toLowerCase().includes(q) ||
+      chat.otherUser?.username?.toLowerCase().includes(q) ||
+      chat.otherUser?.firstName?.toLowerCase().includes(q)
     );
   });
 
