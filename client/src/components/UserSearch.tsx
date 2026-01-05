@@ -14,18 +14,26 @@ import { useSearchUsers } from "@/hooks/use-users";
 import { useCreateChat } from "@/hooks/use-chats";
 import { useLocation } from "wouter";
 
-export function UserSearch() {
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const q = query.toLowerCase();
+  export function UserSearch() {
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState("");
 
-  const filteredUsers = (users ?? []).filter((user) => {
-    return (
-      user.firstName?.toLowerCase().includes(q) ||
-      user.lastName?.toLowerCase().includes(q) ||
-      user.email?.toLowerCase().includes(q)
-    );
-  });
+    const { data: users, isLoading } = useSearchUsers(query);
+
+    const q = query.toLowerCase();
+
+    const filteredUsers = (users ?? []).filter((user) => {
+      return (
+        user.firstName?.toLowerCase().includes(q) ||
+        user.lastName?.toLowerCase().includes(q) ||
+        user.email?.toLowerCase().includes(q)
+      );
+    });
+
+    const createChat = useCreateChat();
+    const [, setLocation] = useLocation();
+  }
+
 
   const { data: users, isLoading } = useSearchUsers(query);
   const createChat = useCreateChat();
