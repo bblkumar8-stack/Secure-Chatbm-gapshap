@@ -14,131 +14,78 @@ import { useSearchUsers } from "@/hooks/use-users";
 import { useCreateChat } from "@/hooks/use-chats";
 import { useLocation } from "wouter";
 
-    export function UserSearch() {
-      const [open, setOpen] = useState(false);
-      const [query, setQuery] = useState("");
+export function UserSearch() {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
 
-      // ✅ pehle users lao
-      const { data: users, isLoading } = useSearchUsers(query);
+  const { data: users, isLoading } = useSearchUsers(query);
+  const createChat = useCreateChat();
+  const [, setLocation] = useLocation();
 
-      // ✅ phir derived values
-      const q = query.toLowerCase();
+  const q = query.toLowerCase();
 
-      const filteredUsers = (users ?? []).filter((user) => {
-        return (
-          user.firstName?.toLowerCase().includes(q) ||
-          user.lastName?.toLowerCase().includes(q) ||
-          user.email?.toLowerCase().includes(q)
-        );
-      });
+  const filteredUsers = (users ?? []).filter(
+    (user) =>
+      user.firstName?.toLowerCase().includes(q) ||
+      user.lastName?.toLowerCase().includes(q) ||
+      user.email?.toLowerCase().includes(q),
+  );
 
-      const createChat = useCreateChat();
-      const [, setLocation] = useLocation();
+  const handleStartChat = (userId: string) => {
+    createChat.mutate(
+      {
+        type: "dm",
+        memberIds: [userId],
+      },
+      {
+        onSuccess: (chat) => {
+          setOpen(false);
+          setLocation(`/?chatId=${chat.id}`);
+        },
+      },
+    );
+  };
 
-      const handleStartChat = (userId: string) => {
-        createChat.mutate(
-          { type: "dm", memberIds: [userId] },
-          {
-            onSuccess: (chat) => {
-              setOpen(false);
-              setLocation(`/?chatId=${chat.id}`);
-            },
-          },
-        );
-      };
-
-      return (/* JSX same as before */);
-    }
-
+  return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-primary hover:text-primary hover:bg-primary/10 rounded-full"
-        >
+        <Button variant="ghost" size="icon">
           <UserPlus className="w-6 h-6" />
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-border/50">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-display text-xl">
-            New Chat
-          </DialogTitle>
+          <DialogTitle>New Chat</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 pt-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search people..."
-              className="pl-9"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
+        <Input
+          placeholder="Search people..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
 
-          <div className="h-[300px] overflow-y-auto space-y-2 pr-2">
-            {isLoading && query && (
-              <p className="text-center text-sm text-muted-foreground py-4">
-                Searching...
-              </p>
-            )}
+        <div className="h-[300px] overflow-y-auto space-y-2">
+          {isLoading && query && <p>Searching...</p>}
 
-            {!isLoading && query && filteredUsers.length === 0 && (
-              <p className="text-center text-sm text-muted-foreground py-4">
-                No users found
-              </p>
-            )}
+          {!isLoading && query && filteredUsers.length === 0 && (
+            <p>No users found</p>
+          )}
 
-            {filteredUsers.map((user) => (
-              <div
-                key={user.id}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 group"
+          {filteredUsers.map((user) => (
+            <div key={user.id} className="flex justify-between p-2">
+              <div>
+                {user.firstName} {user.lastName}
+              </div>
+              <Button
+                size="sm"
+                onClick={() => handleStartChat(user.id)}
+                disabled={createChat.isPending}
               >
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={user.profileImageUrl || undefined} />
-                    <AvatarFallback>
-                      {(
-                        user.username?.[0] ||
-                        user.firstName?.[0] ||
-                        "?"
-                      ).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <div>
-                    <p className="font-medium">
-                      {user.firstName
-                        ? `${user.firstName} ${user.lastName || ""}`
-                        : user.username}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      @{user.username}
-                    </p>
-                  </div>
-                </div>
-
-                <Button
-                  size="sm"
-                  onClick={() => handleStartChat(user.id)}
-                  disabled={createChat.isPending}
-                  className="opacity-0 group-hover:opacity-100"
-                >
-                  Message
-                </Button>
-              </div>
-            ))}
-
-            {!query && (
-              <div className="text-center py-8 text-muted-foreground opacity-50">
-                <Search className="w-12 h-12 mx-auto mb-2" />
-                <p>Type to search for people</p>
-              </div>
-            )}
-          </div>
+                Message
+              </Button>
+            </div>
+          ))}
         </div>
       </DialogContent>
     </Dialog>
