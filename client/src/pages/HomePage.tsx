@@ -23,12 +23,18 @@ export default function HomePage() {
 
   console.log("HOME PAGE activeChatId =", activeChatId);
 
-  const filteredChats = chats?.filter(
-    (chat) =>
-      chat.name?.toLowerCase().includes(search.toLowerCase()) ||
-      chat.otherUser?.username.toLowerCase().includes(search.toLowerCase()) ||
-      chat.otherUser?.firstName?.toLowerCase().includes(search.toLowerCase()),
-  );
+  const q = search.trim().toLowerCase();
+
+  const filteredChats = chats?.filter((chat) => {
+    if (!q) return true;
+
+    return (
+      (chat.name ?? "").toLowerCase().includes(q) ||
+      (chat.otherUser?.username ?? "").toLowerCase().includes(q) ||
+      (chat.otherUser?.firstName ?? "").toLowerCase().includes(q) ||
+      (chat.otherUser?.lastName ?? "").toLowerCase().includes(q)
+    );
+  });
 
   return (
     <div className="flex h-screen bg-background md:pl-20 lg:pl-64">
