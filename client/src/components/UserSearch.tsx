@@ -18,7 +18,20 @@ export function UserSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const { data: users, isLoading } = useSearchUsers(query);
+  // ✅ 1. hook FIRST
+  const { data: users = [], isLoading } = useSearchUsers(query);
+
+  // ✅ 2. derived values AFTER
+  const q = query.toLowerCase();
+
+  const filteredUsers = users.filter((user) => {
+    return (
+      user.firstName?.toLowerCase().includes(q) ||
+      user.lastName?.toLowerCase().includes(q) ||
+      user.email?.toLowerCase().includes(q)
+    );
+  });
+
   const createChat = useCreateChat();
   const [, setLocation] = useLocation();
 
