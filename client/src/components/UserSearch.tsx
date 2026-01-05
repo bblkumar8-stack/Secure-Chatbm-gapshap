@@ -14,40 +14,42 @@ import { useSearchUsers } from "@/hooks/use-users";
 import { useCreateChat } from "@/hooks/use-chats";
 import { useLocation } from "wouter";
 
-export function UserSearch() {
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
+    export function UserSearch() {
+      const [open, setOpen] = useState(false);
+      const [query, setQuery] = useState("");
 
-  const { data: users, isLoading } = useSearchUsers(query);
-  const createChat = useCreateChat();
-  const [, setLocation] = useLocation();
+      // ✅ pehle users lao
+      const { data: users, isLoading } = useSearchUsers(query);
 
-  const q = query.toLowerCase();
+      // ✅ phir derived values
+      const q = query.toLowerCase();
 
-  const filteredUsers = (users ?? []).filter((user) => {
-    return (
-      user.firstName?.toLowerCase().includes(q) ||
-      user.lastName?.toLowerCase().includes(q) ||
-      user.email?.toLowerCase().includes(q)
-    );
-  });
+      const filteredUsers = (users ?? []).filter((user) => {
+        return (
+          user.firstName?.toLowerCase().includes(q) ||
+          user.lastName?.toLowerCase().includes(q) ||
+          user.email?.toLowerCase().includes(q)
+        );
+      });
 
-  const handleStartChat = (userId: string) => {
-    createChat.mutate(
-      {
-        type: "dm",
-        memberIds: [userId],
-      },
-      {
-        onSuccess: (chat) => {
-          setOpen(false);
-          setLocation(`/?chatId=${chat.id}`);
-        },
-      },
-    );
-  };
+      const createChat = useCreateChat();
+      const [, setLocation] = useLocation();
 
-  return (
+      const handleStartChat = (userId: string) => {
+        createChat.mutate(
+          { type: "dm", memberIds: [userId] },
+          {
+            onSuccess: (chat) => {
+              setOpen(false);
+              setLocation(`/?chatId=${chat.id}`);
+            },
+          },
+        );
+      };
+
+      return (/* JSX same as before */);
+    }
+
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
