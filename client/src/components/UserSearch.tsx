@@ -78,9 +78,13 @@ export function UserSearch() {
                 Searching...
               </p>
             )}
+            {!isLoading && query && filteredUsers.length === 0 && (
+              <p className="text-center text-sm text-muted-foreground py-4">
+                No users found
+              </p>
+            )}
 
-      {filteredUsers.map((user) => (
-
+            {filteredUsers.map((user) => (
               <div
                 key={user.id}
                 className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors group"
