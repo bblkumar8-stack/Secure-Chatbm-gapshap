@@ -34,12 +34,7 @@ import { useLocation } from "wouter";
     const [, setLocation] = useLocation();
   }
 
-
-  const { data: users, isLoading } = useSearchUsers(query);
-  const createChat = useCreateChat();
-  const [, setLocation] = useLocation();
-
-  const handleStartChat = (userId: string) => {
+    const handleStartChat = (userId: string) => {
     createChat.mutate(
       {
         type: "dm",
