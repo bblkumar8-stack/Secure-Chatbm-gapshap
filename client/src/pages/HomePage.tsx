@@ -1,3 +1,4 @@
+import bmGapshapIcon from "../../assets/bmgapshap.png";
 import { useState } from "react";
 import { useChats } from "@/hooks/use-chats";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,7 +9,6 @@ import { Search, MoreVertical, CheckCheck } from "lucide-react";
 import { UserSearch } from "@/components/UserSearch";
 import { format } from "date-fns";
 import { ChatWindow } from "./ChatWindow";
-import emptyIcon from "/android-chrome-192x192.png";
 
 export default function HomePage() {
   const { data: chats, isLoading } = useChats();
@@ -151,11 +151,17 @@ export default function HomePage() {
           <ChatWindow chatId={activeChatId} />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center animate-enter">
-            <div className="w-64 h-64 bg-primary/5 rounded-full flex items-center justify-center mb-8">
+            <div className="w-64 h-64 bg-primary/10 rounded-full flex items-center justify-center mb-8">
+              <p className="text-xs text-red-500">{bmGapshapIcon}</p>
               <img
-                src="/android-chrome-192x192.png"
+                src={bmGapshapIcon}
                 alt="BmGapshap"
-                className="w-40 h-40 object-contain rounded-full opacity-95"
+                className="w-48 h-48 object-contain"
+                style={{
+                  background: "#fff",
+                  padding: "8px",
+                  borderRadius: "12px",
+                }}
               />
 
               {/* <!-- chatting concept abstract illustration --> */}
