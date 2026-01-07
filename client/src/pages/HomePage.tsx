@@ -8,6 +8,7 @@ import { Search, MoreVertical, CheckCheck } from "lucide-react";
 import { UserSearch } from "@/components/UserSearch";
 import { format } from "date-fns";
 import { ChatWindow } from "./ChatWindow";
+import emptyIcon from "/android-chrome-192x192.png";
 
 export default function HomePage() {
   const { data: chats, isLoading } = useChats();
@@ -152,7 +153,8 @@ export default function HomePage() {
           <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center animate-enter">
             <div className="w-64 h-64 bg-primary/5 rounded-full flex items-center justify-center mb-8">
               <img
-                src="/android-chrome-192x192.png"
+                src={emptyIcon}
+
                 alt="BmGapshap"
                 className="w-40 h-40 object-contain rounded-full opacity-95"
               />
