@@ -8,26 +8,29 @@
   /* WhatsApp-inspired Teal Palette (Light Mode) */
   --background: 0 0% 100%;
   --foreground: 222 47% 11%;
-  
-  --primary: 168 76% 36%; /* Teal Green */
+
+  --primary: 168 76% 36%;
+  /* Teal Green */
   --primary-foreground: 0 0% 100%;
-  
-  --secondary: 168 30% 96%; /* Very light teal for backgrounds/bubbles */
+
+  --secondary: 168 30% 96%;
+  /* Very light teal for backgrounds/bubbles */
   --secondary-foreground: 168 76% 26%;
-  
+
   --muted: 210 20% 96%;
   --muted-foreground: 215 16% 47%;
-  
-  --accent: 168 76% 42%; /* Slightly brighter teal for accents */
+
+  --accent: 168 76% 42%;
+  /* Slightly brighter teal for accents */
   --accent-foreground: 0 0% 100%;
-  
+
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
-  
+
   --border: 214 32% 91%;
   --input: 214 32% 91%;
   --ring: 168 76% 36%;
-  
+
   --radius: 0.75rem;
 
   --font-body: 'DM Sans', sans-serif;
@@ -36,24 +39,27 @@
 
 .dark {
   /* Dark Mode - Deep Blue/Green tones */
-  --background: 222 47% 6%; /* Very dark blue-gray */
+  --background: 222 47% 6%;
+  /* Very dark blue-gray */
   --foreground: 210 40% 98%;
-  
-  --primary: 168 70% 50%; /* Brighter Teal for dark mode */
+
+  --primary: 168 70% 50%;
+  /* Brighter Teal for dark mode */
   --primary-foreground: 222 47% 11%;
-  
-  --secondary: 217 33% 17%; /* Dark gray-blue for chat bubbles */
+
+  --secondary: 217 33% 17%;
+  /* Dark gray-blue for chat bubbles */
   --secondary-foreground: 210 40% 98%;
-  
+
   --muted: 217 33% 12%;
   --muted-foreground: 215 20% 65%;
-  
+
   --accent: 168 70% 40%;
   --accent-foreground: 210 40% 98%;
-  
+
   --destructive: 0 62% 30%;
   --destructive-foreground: 0 0% 98%;
-  
+
   --border: 217 33% 12%;
   --input: 217 33% 12%;
   --ring: 168 70% 50%;
@@ -65,7 +71,12 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     @apply font-bold tracking-tight;
   }
@@ -76,17 +87,26 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/40 transition-colors;
 }
 
 /* Animations */
 @keyframes enter {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-enter {
@@ -95,4 +115,43 @@
 
 .glass-panel {
   @apply bg-background/80 backdrop-blur-xl border border-border/50 shadow-xl;
+}
+
+/* Sidebar smooth scrollbar – WhatsApp style */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: hsl(168 76% 36% / 0.4) transparent;
+}
+
+/* Chrome / Edge / Safari */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  /* 👈 YAHI NUMBER HAI */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(168 76% 36% / 0.45);
+  border-radius: 10px;
+  /* 👈 YAHI NUMBER */
+}
+
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-bubble {
+  animation: bubble-in 120ms ease-out;
 }

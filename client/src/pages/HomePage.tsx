@@ -152,10 +152,11 @@ export default function HomePage() {
           <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center animate-enter">
             <div className="w-64 h-64 bg-primary/5 rounded-full flex items-center justify-center mb-8">
               <img
-                src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hhdHxlbnwwfHwwfHx8MA%3D%3D"
-                alt="Select Chat"
-                className="w-48 h-48 object-cover rounded-full opacity-80 mix-blend-multiply"
+                src="/android-chrome-192x192.png"
+                alt="BmGapshap"
+                className="w-40 h-40 object-contain rounded-full opacity-95"
               />
+
               {/* <!-- chatting concept abstract illustration --> */}
             </div>
             <h2 className="text-2xl font-display font-bold text-foreground mb-2">

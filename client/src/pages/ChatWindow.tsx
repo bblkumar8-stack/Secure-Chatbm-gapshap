@@ -56,6 +56,17 @@ export function ChatWindow({ chatId }: { chatId: number }) {
         content: inputText,
       }),
     });
+    {
+      /* Typing indicator (UI only) */
+    }
+    <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
+      <div className="flex gap-1">
+        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" />
+        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce delay-150" />
+        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce delay-300" />
+      </div>
+      <span className="text-xs">typing…</span>
+    </div>;
 
     setInputText("");
   };
@@ -112,15 +123,25 @@ export function ChatWindow({ chatId }: { chatId: number }) {
           return (
             <div
               key={msg.id}
-              className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+              className={`flex mb-2 ${isMe ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`rounded-xl px-3 py-2 max-w-[70%] text-sm ${
-                  isMe ? "bg-primary text-primary-foreground" : "bg-muted"
-                }`}
+                className={`
+                  max-w-[70%] px-3 py-2 text-sm leading-relaxed animate-bubble
+                  ${
+                    isMe
+                      ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md"
+                      : "bg-muted text-foreground rounded-2xl rounded-bl-md"
+                  }
+                `}
               >
-                <p>{msg.content}</p>
-                <div className="text-[10px] opacity-70 text-right mt-1">
+                <p className="break-words">{msg.content}</p>
+
+                <div
+                  className={`text-[10px] opacity-70 mt-1 ${
+                    isMe ? "text-right" : "text-left"
+                  }`}
+                >
                   {format(new Date(msg.createdAt), "h:mm a")}
                 </div>
               </div>
@@ -155,11 +176,10 @@ export function ChatWindow({ chatId }: { chatId: number }) {
           className="flex-1 border rounded-lg px-3 py-2 text-sm"
         />
 
-      <Button type="submit" disabled={!inputText.trim()}>
-        Send
-      </Button>
+        <Button type="submit" disabled={!inputText.trim()}>
+          Send
+        </Button>
       </form>
-      </div>
-      );
-      }
-
+    </div>
+  );
+}
