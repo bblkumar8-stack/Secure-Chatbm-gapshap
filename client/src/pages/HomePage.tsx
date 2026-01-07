@@ -153,11 +153,10 @@ export default function HomePage() {
           <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center animate-enter">
             <div className="w-64 h-64 bg-primary/5 rounded-full flex items-center justify-center mb-8">
               <img
-                src={emptyIcon}
+                src="/android-chrome-192x192.png"
                 alt="BmGapshap"
                 className="w-40 h-40 object-contain rounded-full opacity-95"
               />
-
 
               {/* <!-- chatting concept abstract illustration --> */}
             </div>
