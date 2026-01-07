@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Switch, Route, Redirect } from "wouter";
-import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+
+import { queryClient } from "./lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { Navigation } from "@/components/Navigation";
 import { AudioPlayer } from "@/components/AudioPlayer";
@@ -13,15 +14,16 @@ import JukeboxPage from "@/pages/JukeboxPage";
 import StoriesPage from "@/pages/StoriesPage";
 import NotFound from "@/pages/not-found";
 
-function ProtectedRoute({ component: Component, ...rest }: any) {
+function ProtectedRoute({ component: Component }: any) {
   const { user, isLoading } = useAuth();
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         Loading...
       </div>
     );
+  }
 
   if (!user) {
     return <Redirect to="/welcome" />;
@@ -29,7 +31,7 @@ function ProtectedRoute({ component: Component, ...rest }: any) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Navigation is rendered inside pages to handle layout specifics (like hidden nav on mobile chat) */}
+      <Navigation />
       <Component />
       <AudioPlayer />
     </div>
@@ -39,12 +41,13 @@ function ProtectedRoute({ component: Component, ...rest }: any) {
 function Router() {
   const { user, isLoading } = useAuth();
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         Loading...
       </div>
     );
+  }
 
   return (
     <Switch>
@@ -77,28 +80,9 @@ function App() {
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
-    ws.onopen = () => {
-      console.log("🟢 WebSocket connected");
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === "new_message") {
-          console.log("📩 New message:", data.message);
-        }
-      } catch (e) {
-        console.error("WS parse error", e);
-      }
-    };
-
-    ws.onerror = (err) => {
-      console.error("🔴 WebSocket error", err);
-    };
-
-    ws.onclose = () => {
-      console.log("⚪ WebSocket disconnected");
-    };
+    ws.onopen = () => console.log("🟢 WebSocket connected");
+    ws.onclose = () => console.log("⚪ WebSocket disconnected");
+    ws.onerror = (err) => console.error("🔴 WebSocket error", err);
 
     return () => {
       ws.close();
@@ -107,9 +91,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Router />
-    
+      <Router />
     </QueryClientProvider>
   );
 }
