@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Switch, Route, Redirect } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
-
 import { queryClient } from "./lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { Navigation } from "@/components/Navigation";
