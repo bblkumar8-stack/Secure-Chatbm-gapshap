@@ -1,9 +1,8 @@
-import bmgapshapIcon from "../assets/bmgapshap.png";
 import { useState } from "react";
 import { useChats } from "@/hooks/use-chats";
 import { useAuth } from "@/hooks/use-auth";
-import { Link, useLocation } from "wouter";
-import { Search, MoreVertical, CheckCheck } from "lucide-react";
+import { Link } from "wouter";
+import { Search, MoreVertical } from "lucide-react";
 import { format } from "date-fns";
 import { ChatWindow } from "./ChatWindow";
 
@@ -11,15 +10,12 @@ export default function HomePage() {
   const { data: chats, isLoading } = useChats();
   const { user } = useAuth();
   const [search, setSearch] = useState("");
-  const [location] = useLocation();
 
-  // Parse chatId from query string
+  // get chatId from URL
   const params = new URLSearchParams(window.location.search);
   const activeChatId = params.get("chatId")
-    ? parseInt(params.get("chatId")!)
+    ? Number(params.get("chatId"))
     : null;
-
-  console.log("HOME PAGE activeChatId =", activeChatId);
 
   const q = search.toLowerCase();
 
@@ -33,54 +29,49 @@ export default function HomePage() {
 
   return (
     <div className="flex h-screen bg-background md:pl-20 lg:pl-64">
-      {/* Chat List Sidebar - Hidden on mobile if chat is active */}
+      {/* Sidebar */}
       <div
-        className={`
-        flex-col w-full md:w-80 lg:w-96 border-r bg-background/50 backdrop-blur-sm
-        ${activeChatId ? "hidden md:flex" : "flex"}
-      `}
+        className={`flex-col w-full md:w-80 lg:w-96 border-r bg-background
+        ${activeChatId ? "hidden md:flex" : "flex"}`}
       >
-        <div className="p-4 space-y-4 border-b bg-background/95 backdrop-blur z-10 sticky top-0">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-display font-bold">Chats</h1>
-            <div className="flex items-center gap-2">
-              <button className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground">
-                <MoreVertical className="w-5 h-5" />
-              </button>
-            </div>
+        {/* Header */}
+        <div className="p-4 border-b sticky top-0 bg-background z-10">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold">Chats</h1>
+            <button className="p-2 hover:bg-muted rounded-full">
+              <MoreVertical className="w-5 h-5" />
+            </button>
           </div>
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search or start new chat"
+              placeholder="Search chats"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+              className="w-full pl-9 pr-3 py-2 rounded-md border outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
+        {/* Chat List */}
+        <div className="flex-1 overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-muted-foreground">
+            <p className="p-4 text-center text-muted-foreground">
               Loading chats...
-            </div>
+            </p>
           ) : filteredChats?.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              <p>No chats yet.</p>
-              <p className="text-sm mt-2">Start a conversation with someone!</p>
-            </div>
+            <p className="p-6 text-center text-muted-foreground">
+              No chats found
+            </p>
           ) : (
             filteredChats?.map((chat) => {
-              // Determine display name and image
               const isDM = chat.type === "dm";
               const displayName = isDM
                 ? chat.otherUser?.firstName || chat.otherUser?.username
                 : chat.name;
-              const displayImage = isDM
-                ? chat.otherUser?.profileImageUrl
-                : chat.iconUrl;
+
               const lastMsg = chat.lastMessage;
               const isActive = activeChatId === chat.id;
 
@@ -88,45 +79,25 @@ export default function HomePage() {
                 <Link
                   key={chat.id}
                   href={`/?chatId=${chat.id}`}
-                  className={`
-                    flex items-center gap-3 p-4 transition-colors cursor-pointer border-b border-border/40
-                    ${isActive ? "bg-primary/5 border-l-4 border-l-primary" : "hover:bg-muted/50 border-l-4 border-l-transparent"}
-                  `}
+                  className={`block border-b px-4 py-3 transition
+                    ${isActive ? "bg-primary/10" : "hover:bg-muted"}`}
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline mb-1">
-                      <h3
-                        className={`font-semibold truncate ${isActive ? "text-primary" : "text-foreground"}`}
-                      >
-                        {displayName}
-                      </h3>
-                      {lastMsg && (
-                        <span className="text-xs text-muted-foreground shrink-0 ml-2">
-                          {format(new Date(lastMsg.createdAt), "h:mm a")}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-sm text-muted-foreground truncate pr-2">
-                        {lastMsg ? (
-                          <>
-                            {lastMsg.senderId === user?.id && (
-                              <span className="mr-1">You:</span>
-                            )}
-                            {lastMsg.type === "image"
-                              ? "📷 Photo"
-                              : lastMsg.content}
-                          </>
-                        ) : (
-                          <span className="italic text-xs">
-                            No messages yet
-                          </span>
-                        )}
-                      </p>
-                      {/* Unread badge placeholder - logic can be added later */}
-                      {/* <span className="w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center">2</span> */}
-                    </div>
+                  <div className="flex justify-between mb-1">
+                    <h3 className="font-semibold truncate">{displayName}</h3>
+                    {lastMsg && (
+                      <span className="text-xs text-muted-foreground">
+                        {format(new Date(lastMsg.createdAt), "h:mm a")}
+                      </span>
+                    )}
                   </div>
+
+                  <p className="text-sm text-muted-foreground truncate">
+                    {lastMsg
+                      ? lastMsg.type === "image"
+                        ? "📷 Photo"
+                        : lastMsg.content
+                      : "No messages yet"}
+                  </p>
                 </Link>
               );
             })
@@ -134,29 +105,23 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Main Chat Area */}
+      {/* Chat Window */}
       <div
-        className={`flex-1 bg-muted/30 relative flex flex-col ${!activeChatId ? "hidden md:flex" : "flex"}`}
+        className={`flex-1 flex flex-col bg-muted/30
+        ${!activeChatId ? "hidden md:flex" : "flex"}`}
       >
         {activeChatId ? (
           <ChatWindow chatId={activeChatId} />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center animate-enter">
             <div className="w-64 h-64 bg-primary/10 rounded-full flex items-center justify-center mb-8">
-              <p className="text-xs text-red-500">{bmGapshapIcon}</p>
               <img
-                src={bmGapshapIcon}
+                src="/logo512.png"
                 alt="BmGapshap"
-                className="w-48 h-48 object-contain"
-                style={{
-                  background: "#fff",
-                  padding: "8px",
-                  borderRadius: "12px",
-                }}
+                className="w-48 h-48 object-contain bg-white p-2 rounded-xl"
               />
-
-              {/* <!-- chatting concept abstract illustration --> */}
             </div>
+
             <h2 className="text-2xl font-display font-bold text-foreground mb-2">
               Welcome to BmGapshap
             </h2>

@@ -1,46 +1,40 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 
-type PlayerContextType = {
-  currentSrc: string | null;
-  play: (src: string) => void;
-  stop: () => void;
-};
+export function AudioPlayer() {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-const PlayerContext = createContext<PlayerContextType | null>(null);
+  useEffect(() => {
+    audioRef.current = new Audio();
 
-/* 🔹 Hook exported */
-export function usePlayer() {
-  const ctx = useContext(PlayerContext);
-  if (!ctx) {
-    throw new Error("usePlayer must be used inside AudioPlayer");
-  }
-  return ctx;
-}
+    return () => {
+      audioRef.current?.pause();
+      audioRef.current = null;
+    };
+  }, []);
 
-/* 🔹 Provider + UI */
-export function AudioPlayer({ children }: { children?: ReactNode }) {
-  const [currentSrc, setCurrentSrc] = useState<string | null>(null);
+  const playAudio = (url: string) => {
+    if (!audioRef.current) return;
 
-  const play = (src: string) => {
-    setCurrentSrc(src);
+    audioRef.current.src = url;
+    audioRef.current.play();
+    setIsPlaying(true);
+
+    audioRef.current.onended = () => {
+      setIsPlaying(false);
+    };
   };
 
-  const stop = () => {
-    setCurrentSrc(null);
-  };
+  // expose to window for now (simple & safe)
+  (window as any).playAudio = playAudio;
 
   return (
-    <PlayerContext.Provider value={{ currentSrc, play, stop }}>
-      {children}
-
-      {currentSrc && (
-        <audio
-          src={currentSrc}
-          autoPlay
-          controls
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50"
-        />
+    <div className="fixed bottom-4 right-4 z-50">
+      {isPlaying && (
+        <div className="bg-background border shadow-lg rounded-full px-4 py-2 text-sm">
+          🎵 Playing audio...
+        </div>
       )}
-    </PlayerContext.Provider>
+    </div>
   );
 }

@@ -1,5 +1,6 @@
+import { useState } from "react";
+
 import { useAudios, useCreateAudio } from "@/hooks/use-media";
-import { usePlayer } from "@/components/AudioPlayer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Play, Pause, Music, Upload, Plus } from "lucide-react";
@@ -14,7 +15,18 @@ import { ObjectUploader } from "@/components/ObjectUploader";
 
 export default function JukeboxPage() {
   const { data: audios, isLoading } = useAudios();
-  const { currentTrackId, isPlaying, playTrack, togglePlay } = usePlayer();
+  const [currentTrackId, setCurrentTrackId] = useState<number | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const playTrack = (trackId: number) => {
+    setCurrentTrackId(trackId);
+    setIsPlaying(true);
+  };
+
+  const togglePlay = () => {
+    setIsPlaying((prev) => !prev);
+  };
+
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const createAudio = useCreateAudio();
   const { user } = useAuth();
