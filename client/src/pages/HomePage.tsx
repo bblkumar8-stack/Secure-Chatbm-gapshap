@@ -1,12 +1,9 @@
-import bmGapshapIcon from "../../assets/bmgapshap.png";
+import bmgapshapIcon from "../assets/bmgapshap.png";
 import { useState } from "react";
 import { useChats } from "@/hooks/use-chats";
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { Search, MoreVertical, CheckCheck } from "lucide-react";
-import { UserSearch } from "@/components/UserSearch";
 import { format } from "date-fns";
 import { ChatWindow } from "./ChatWindow";
 
@@ -47,7 +44,6 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-display font-bold">Chats</h1>
             <div className="flex items-center gap-2">
-              <UserSearch />
               <button className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground">
                 <MoreVertical className="w-5 h-5" />
               </button>
@@ -55,11 +51,12 @@ export default function HomePage() {
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
+            <input
+              type="text"
               placeholder="Search or start new chat"
-              className="pl-9 bg-muted/50 border-none focus:ring-1 focus:ring-primary"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
         </div>
@@ -96,12 +93,6 @@ export default function HomePage() {
                     ${isActive ? "bg-primary/5 border-l-4 border-l-primary" : "hover:bg-muted/50 border-l-4 border-l-transparent"}
                   `}
                 >
-                  <Avatar className="h-12 w-12 border border-border/50">
-                    <AvatarImage src={displayImage || undefined} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                      {displayName?.[0]?.toUpperCase() || "?"}
-                    </AvatarFallback>
-                  </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-1">
                       <h3

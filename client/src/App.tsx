@@ -3,10 +3,7 @@ import { Switch, Route, Redirect } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
-import { Navigation } from "@/components/Navigation";
-import { AudioPlayer } from "@/components/AudioPlayer";
 
-// Pages
 import HomePage from "@/pages/HomePage";
 import LandingPage from "@/pages/LandingPage";
 import JukeboxPage from "@/pages/JukeboxPage";
@@ -19,7 +16,7 @@ function ProtectedRoute({ component: Component }: any) {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading...
+        Loading…
       </div>
     );
   }
@@ -28,13 +25,7 @@ function ProtectedRoute({ component: Component }: any) {
     return <Redirect to="/welcome" />;
   }
 
-  return (
-    <div className="flex h-screen overflow-hidden">
-      <Navigation />
-      <Component />
-      <AudioPlayer />
-    </div>
-  );
+  return <Component />;
 }
 
 function Router() {
@@ -43,7 +34,7 @@ function Router() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading...
+        Loading…
       </div>
     );
   }
@@ -69,23 +60,15 @@ function Router() {
   );
 }
 
-function App() {
+export default function App() {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://${window.location.host}`;
-
-    const ws = new WebSocket(wsUrl);
+    const ws = new WebSocket(`${protocol}://${window.location.host}`);
     wsRef.current = ws;
 
-    ws.onopen = () => console.log("🟢 WebSocket connected");
-    ws.onclose = () => console.log("⚪ WebSocket disconnected");
-    ws.onerror = (err) => console.error("🔴 WebSocket error", err);
-
-    return () => {
-      ws.close();
-    };
+    return () => ws.close();
   }, []);
 
   return (
@@ -94,5 +77,3 @@ function App() {
     </QueryClientProvider>
   );
 }
-
-export default App;

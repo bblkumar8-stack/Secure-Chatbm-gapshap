@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import appIcon from "@assets/generated_images/app_icon_for_bmgapshap_chat_application.png";
 import { MessageSquare, Shield, Zap } from "lucide-react";
 
@@ -11,35 +10,57 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col">
       <header className="p-6 flex justify-between items-center max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-3">
-          <img src={appIcon} alt="Logo" className="w-10 h-10 rounded-xl shadow-lg" />
-          <span className="font-display font-bold text-xl tracking-tight">BmGapshap</span>
+          <img
+            src={appIcon}
+            alt="Logo"
+            className="w-10 h-10 rounded-xl shadow-lg"
+          />
+          <span className="font-display font-bold text-xl tracking-tight">
+            BmGapshap
+          </span>
         </div>
-        <Button onClick={handleLogin}>Log In</Button>
+        <button
+          onClick={handleLogin}
+          className="px-4 py-2 rounded bg-primary text-white"
+        >
+          Log In
+        </button>
       </header>
 
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="max-w-4xl w-full grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-8 animate-enter">
             <h1 className="font-display text-5xl md:text-6xl font-bold leading-tight text-foreground">
-              Connect with your world, <span className="text-primary">beautifully.</span>
+              Connect with your world,{" "}
+              <span className="text-primary">beautifully.</span>
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Experience messaging reimagined with stunning design, crystal clear audio, and seamless sharing.
+              Experience messaging reimagined with stunning design, crystal
+              clear audio, and seamless sharing.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="text-lg px-8 py-6 rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-1" onClick={handleLogin}>
+              <button
+                onClick={handleLogin}
+                className="text-lg px-8 py-6 rounded-full bg-primary text-white
+                           shadow-xl shadow-primary/20 hover:shadow-primary/30
+                           transition-all hover:-translate-y-1"
+              >
                 Get Started
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 rounded-full border-2">
+              </button>
+
+              <button
+                className="text-lg px-8 py-6 rounded-full border-2 border-primary text-primary
+                           hover:bg-primary hover:text-white transition-all"
+              >
                 Learn More
-              </Button>
+              </button>
             </div>
-            
+
             <div className="grid grid-cols-3 gap-6 pt-8 border-t">
               {[
                 { icon: Zap, label: "Fast" },
                 { icon: Shield, label: "Secure" },
-                { icon: MessageSquare, label: "Simple" }
+                { icon: MessageSquare, label: "Simple" },
               ].map((feature, i) => (
                 <div key={i} className="flex flex-col gap-2">
                   <feature.icon className="w-6 h-6 text-primary" />
@@ -80,7 +101,7 @@ export default function LandingPage() {
           </div>
         </div>
       </main>
-      
+
       <footer className="py-6 text-center text-sm text-muted-foreground border-t">
         © 2024 BmGapshap. All rights reserved.
       </footer>
