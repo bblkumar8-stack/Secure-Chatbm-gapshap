@@ -1,6 +1,3 @@
-const [isTyping, setIsTyping] = useState(false);
-const typingTimeout = useRef<any>(null);
-import ChatWindow from "@/pages/ChatWindow";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,16 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Send, ArrowLeft, MoreVertical, Phone, Video } from "lucide-react";
 import { Link } from "wouter";
 import { format } from "date-fns";
+
 console.log("CHAT WINDOW FILE LOADED");
 
-export function ChatWindow({ chatId }: { chatId: number }) {
-  const { user } = useAuth();
+  export function ChatWindow({ chatId }: { chatId: number }) {
+    const { user } = useAuth();
 
-  const [messages, setMessages] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [inputText, setInputText] = useState("");
+    const [messages, setMessages] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [inputText, setInputText] = useState("");
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+    // typing indicator
+    const [isTyping, setIsTyping] = useState(false);
+    const typingTimeout = useRef<any>(null);
 
   // ===============================
   // POLLING (ONLY SOURCE OF TRUTH)
