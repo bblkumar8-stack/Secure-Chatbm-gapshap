@@ -22,7 +22,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
-
+      "@shared": path.resolve(import.meta.dirname, "shared"),
       // ✅ ADD THESE
       "@hooks": path.resolve(import.meta.dirname, "client", "src", "hooks"),
       "@components": path.resolve(
