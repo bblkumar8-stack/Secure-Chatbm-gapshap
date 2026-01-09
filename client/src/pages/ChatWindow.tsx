@@ -8,16 +8,17 @@ import { format } from "date-fns";
 
 console.log("CHAT WINDOW FILE LOADED");
 
-  export function ChatWindow({ chatId }: { chatId: number }) {
-    const { user } = useAuth();
+export function ChatWindow({ chatId }: { chatId: number }) {
+  const { user } = useAuth();
 
-    const [messages, setMessages] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [inputText, setInputText] = useState("");
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [inputText, setInputText] = useState("");
+  const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
 
-    // typing indicator
-    const [isTyping, setIsTyping] = useState(false);
-    const typingTimeout = useRef<any>(null);
+  // typing indicator
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeout = useRef<any>(null);
 
   // ===============================
   // POLLING (ONLY SOURCE OF TRUTH)
