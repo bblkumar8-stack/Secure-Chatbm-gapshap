@@ -21,11 +21,20 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+      "@": path.resolve(import.meta.dirname, "client", "src"),
+
+      // ✅ ADD THESE
+      "@hooks": path.resolve(import.meta.dirname, "client", "src", "hooks"),
+      "@components": path.resolve(
+        import.meta.dirname,
+        "client",
+        "src",
+        "components",
+      ),
+      "@pages": path.resolve(import.meta.dirname, "client", "src", "pages"),
     },
   },
+
   root: path.resolve(import.meta.dirname, "client"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),

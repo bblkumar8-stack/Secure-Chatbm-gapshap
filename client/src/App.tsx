@@ -8,6 +8,7 @@ import LandingPage from "@/pages/LandingPage";
 import JukeboxPage from "@/pages/JukeboxPage";
 import StoriesPage from "@/pages/StoriesPage";
 import NotFound from "@/pages/not-found";
+import { useAuth } from "@hooks/use-auth";
 
 function ProtectedRoute({ component: Component }: any) {
   const { user, isLoading } = useAuth();
