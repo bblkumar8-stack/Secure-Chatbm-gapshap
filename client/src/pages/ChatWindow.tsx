@@ -1,3 +1,6 @@
+const [isTyping, setIsTyping] = useState(false);
+const typingTimeout = useRef<any>(null);
+import ChatWindow from "@/pages/ChatWindow";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -148,6 +151,14 @@ export function ChatWindow({ chatId }: { chatId: number }) {
             </div>
           );
         })}
+        {/* Typing indicator */}
+        {isOtherUserTyping && (
+          <div className="flex justify-start mb-2">
+            <div className="px-3 py-2 rounded-lg bg-muted text-sm text-muted-foreground animate-pulse">
+              typing…
+            </div>
+          </div>
+        )}
 
         <div ref={messagesEndRef} />
       </div>
@@ -171,7 +182,18 @@ export function ChatWindow({ chatId }: { chatId: number }) {
       >
         <input
           value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
+          onChange={(e) => {
+            setInputText(e.target.value);
+
+            if (wsRef.current?.readyState === WebSocket.OPEN) {
+              wsRef.current.send(
+                JSON.stringify({
+                  type: "typing",
+                  chatId,
+                }),
+              );
+            }
+          }}
           placeholder="Type a message..."
           className="flex-1 border rounded-lg px-3 py-2 text-sm"
         />
