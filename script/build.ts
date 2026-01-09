@@ -5,6 +5,9 @@ import { rm, readFile } from "fs/promises";
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
 const allowlist = [
+  // ✅ KEEP REACT EXTERNAL (DO NOT BUNDLE)
+  // ❌ DO NOT add react here
+
   "@google/generative-ai",
   "axios",
   "connect-pg-simple",
@@ -46,20 +49,28 @@ async function buildAll() {
   ];
   const externals = allDeps.filter((dep) => !allowlist.includes(dep));
 
-  await esbuild({
-    entryPoints: ["server/index.ts"],
-    platform: "node",
-    bundle: true,
-    format: "cjs",
-    outfile: "dist/index.cjs",
-    define: {
-      "process.env.NODE_ENV": '"production"',
-    },
-    minify: true,
-    external: externals,
-    logLevel: "info",
-  });
-}
+await esbuild({
+  entryPoints: ["server/index.ts"],
+  platform: "node",
+  bundle: true,
+  format: "cjs",
+  outfile: "dist/index.cjs",
+  define: {
+    "process.env.NODE_ENV": '"production"',
+  },
+  minify: true,
+
+  // ✅ FINAL FIX
+  external: [
+    ...externals,
+    "react",
+    "react-dom",
+    "react/jsx-runtime",
+  ],
+
+  logLevel: "info",
+});
+
 
 buildAll().catch((err) => {
   console.error(err);
