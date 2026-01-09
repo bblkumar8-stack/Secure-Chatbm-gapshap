@@ -16,63 +16,63 @@ export function ChatWindow({ chatId }: { chatId: number }) {
   const [inputText, setInputText] = useState("");
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
 
-  // typing indicator
-  const [isTyping, setIsTyping] = useState(false);
-  const typingTimeout = useRef<any>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // ===============================
-  // POLLING (ONLY SOURCE OF TRUTH)
+  // LOAD MESSAGES (POLLING)
   // ===============================
   useEffect(() => {
     if (!chatId) return;
 
-    const loadMessages = () => {
-      fetch(`/api/chats/${chatId}/messages`, {
-        credentials: "include",
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setMessages(Array.isArray(data) ? data : []);
-          setLoading(false);
-        })
-        .catch(() => {
-          setLoading(false);
+    const loadMessages = async () => {
+      try {
+        const res = await fetch(`/api/chats/${chatId}/messages`, {
+          credentials: "include",
         });
+        const data = await res.json();
+        setMessages(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Failed to load messages", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    loadMessages(); // first load
+    loadMessages();
     const interval = setInterval(loadMessages, 4000);
 
     return () => clearInterval(interval);
   }, [chatId]);
 
-  const handleSend = async () => {
-    console.log("HANDLE SEND CLICKED");
+  // ===============================
+  // AUTO SCROLL
+  // ===============================
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // ===============================
+  // SEND MESSAGE (SAFE)
+  // ===============================
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (!inputText.trim()) return;
 
-    await fetch(`/api/chats/${chatId}/messages`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content: inputText,
-      }),
-    });
-    {
-      /* Typing indicator (UI only) */
-    }
-    <div className="flex items-center gap-2 px-4 py-2 text-muted-foreground">
-      <div className="flex gap-1">
-        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" />
-        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce delay-150" />
-        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce delay-300" />
-      </div>
-      <span className="text-xs">typing…</span>
-    </div>;
+    try {
+      await fetch(`/api/chats/${chatId}/messages`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: inputText }),
+      });
 
-    setInputText("");
+      setInputText("");
+    } catch (err) {
+      console.error("❌ Failed to send message", err);
+    }
   };
 
   // ===============================
@@ -127,37 +127,27 @@ export function ChatWindow({ chatId }: { chatId: number }) {
           return (
             <div
               key={msg.id}
-              className={`flex mb-2 ${isMe ? "justify-end" : "justify-start"}`}
+              className={`flex ${isMe ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`
-                  max-w-[70%] px-3 py-2 text-sm leading-relaxed animate-bubble
-                  ${
-                    isMe
-                      ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md"
-                      : "bg-muted text-foreground rounded-2xl rounded-bl-md"
-                  }
-                `}
+                className={`max-w-[70%] px-3 py-2 text-sm rounded-2xl ${
+                  isMe
+                    ? "bg-primary text-primary-foreground rounded-br-md"
+                    : "bg-muted rounded-bl-md"
+                }`}
               >
                 <p className="break-words">{msg.content}</p>
-
-                <div
-                  className={`text-[10px] opacity-70 mt-1 ${
-                    isMe ? "text-right" : "text-left"
-                  }`}
-                >
+                <div className="text-[10px] opacity-70 mt-1 text-right">
                   {format(new Date(msg.createdAt), "h:mm a")}
                 </div>
               </div>
             </div>
           );
         })}
-        {/* Typing indicator */}
+
         {isOtherUserTyping && (
-          <div className="flex justify-start mb-2">
-            <div className="px-3 py-2 rounded-lg bg-muted text-sm text-muted-foreground animate-pulse">
-              typing…
-            </div>
+          <div className="text-sm text-muted-foreground animate-pulse">
+            typing…
           </div>
         )}
 
@@ -165,42 +155,16 @@ export function ChatWindow({ chatId }: { chatId: number }) {
       </div>
 
       {/* Input */}
-      <form
-        className="p-3 border-t flex gap-2"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          if (!inputText.trim()) return;
-
-          await fetch(`/api/chats/${chatId}/messages`, {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ content: inputText }),
-          });
-
-          setInputText("");
-        }}
-      >
+      <form onSubmit={handleSend} className="p-3 border-t flex gap-2">
         <input
           value={inputText}
-          onChange={(e) => {
-            setInputText(e.target.value);
-
-            if (wsRef.current?.readyState === WebSocket.OPEN) {
-              wsRef.current.send(
-                JSON.stringify({
-                  type: "typing",
-                  chatId,
-                }),
-              );
-            }
-          }}
-          placeholder="Type a message..."
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Type a message…"
           className="flex-1 border rounded-lg px-3 py-2 text-sm"
         />
 
         <Button type="submit" disabled={!inputText.trim()}>
-          Send
+          <Send className="w-4 h-4" />
         </Button>
       </form>
     </div>
