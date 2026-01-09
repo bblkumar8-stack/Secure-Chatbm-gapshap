@@ -1,4 +1,3 @@
-import appIcon from "@assets/generated_images/app_icon_for_bmgapshap_chat_application.png";
 import { MessageSquare, Shield, Zap } from "lucide-react";
 
 export default function LandingPage() {
@@ -11,10 +10,11 @@ export default function LandingPage() {
       <header className="p-6 flex justify-between items-center max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-3">
           <img
-            src={appIcon}
-            alt="Logo"
-            className="w-10 h-10 rounded-xl shadow-lg"
+            src="/app_icon.png"
+            alt="BmGapshap"
+            className="w-48 h-48 object-contain"
           />
+
           <span className="font-display font-bold text-xl tracking-tight">
             BmGapshap
           </span>
