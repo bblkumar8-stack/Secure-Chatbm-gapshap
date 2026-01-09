@@ -2,9 +2,9 @@ import express, { type Express } from "express";
 import path from "path";
 
 export function serveStatic(app: Express) {
-  const publicPath = path.resolve(process.cwd(), "..", "dist", "public");
+  const publicPath = path.resolve("dist/public");
 
-  console.log("📦 Static path:", publicPath);
+  console.log("📦 Serving static from:", publicPath);
 
   app.use(express.static(publicPath));
 
