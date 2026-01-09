@@ -37,9 +37,10 @@ async function buildAll() {
 
   console.log("building client...");
   await viteBuild({
+    root: "client",
     configFile: path.resolve(process.cwd(), "vite.config.ts"),
     build: {
-      outDir: "dist/public",
+      outDir: "../dist/public", // 👈 THIS FIX
       emptyOutDir: true,
     },
   });
